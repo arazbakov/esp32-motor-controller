@@ -87,30 +87,38 @@ document.addEventListener('DOMContentLoaded', function () {
     connect();
 
     elementXMinus.addEventListener("click", e => {
+        event.preventDefault();
         currentSocket && currentSocket.send("appendX-1");
     });
     elementXPlus.addEventListener("click", e => {
+        event.preventDefault();
         currentSocket && currentSocket.send("appendX1");
     });
 
     elementYMinus.addEventListener("click", e => {
+        event.preventDefault();
         currentSocket && currentSocket.send("appendY-1");
     });
     elementYPlus.addEventListener("click", e => {
+        event.preventDefault();
         currentSocket && currentSocket.send("appendY1");
     });
 
     elementZMinus.addEventListener("click", e => {
+        event.preventDefault();
         currentSocket && currentSocket.send("appendZ-1");
     });
     elementZPlus.addEventListener("click", e => {
+        event.preventDefault();
         currentSocket && currentSocket.send("appendZ1");
     });
 
     elementAMinus.addEventListener("click", e => {
+        event.preventDefault();
         currentSocket && currentSocket.send("appendA-1");
     });
     elementAPlus.addEventListener("click", e => {
+        event.preventDefault();
         currentSocket && currentSocket.send("appendA1");
     });
 
