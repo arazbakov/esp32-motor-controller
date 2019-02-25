@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>ESP32 Test Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="bootstrap.min.css" />
+    <script src="main.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <nav class="navbar navbar-dark bg-dark mb-3">
+            <span class="navbar-brand">ESP32 Control</span>
+            <span class="navbar-text">
+                <div id="statusBadge" class="badge" role="alert">
+                    
+                </div>
+            </span>
+        </nav>
+
+        <div id="controlsPanel" class="disabled-panel">
+            <div class="row">
+                <div class="row col-lg">
+                    <div class="form-group col-sm">
+                        <label for="xValue">X</label>
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <button id="xMinus" class="btn btn-info">-</button>
+                            </div>
+                            <input type="text" class="form-control" id="xValue" />
+                            <div class="input-group-append">
+                                <button id="xPlus" class="btn btn-success">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-sm">
+                        <label for="yValue">Y</label>
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <button id="yMinus" class="btn btn-info">-</button>
+                            </div>
+                            <input type="text" class="form-control" id="yValue" />
+                            <div class="input-group-append">
+                                <button id="yPlus" class="btn btn-success">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row col-lg">
+                    <div class="form-group col-sm">
+                        <label for="zValue">Z</label>
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <button id="zMinus" class="btn btn-info">-</button>
+                            </div>
+                            <input type="text" class="form-control" id="zValue" />
+                            <div class="input-group-append">
+                                <button id="zPlus" class="btn btn-success">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-sm">
+                        <label for="aValue">Angle</label>
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                                <button id="aMinus" class="btn btn-info">-</button>
+                            </div>
+                            <input type="text" class="form-control" id="aValue" />
+                            <div class="input-group-append">
+                                <button id="aPlus" class="btn btn-success">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

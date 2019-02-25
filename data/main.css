@@ -1,0 +1,10 @@
+.disabled-panel {
+    opacity: 0.3;
+    cursor: default;
+    pointer-events: none;
+}
+
+body {
+    user-select: none;
+    cursor: default;
+}
