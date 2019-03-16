@@ -2,9 +2,8 @@
 
 A ESP32 firmware for controlling 4 axis stepper motors
 
-## Dependencies
+## Building and uploading to ESP32
 
-Required Libraries (unpack to Documents/Arduino/Libraries and remove "-master" suffix)
-
-* https://github.com/me-no-dev/AsyncTCP/archive/master.zip
-* https://github.com/me-no-dev/ESPAsyncWebServer/archive/master.zip
+* install PlatformIO
+* run `pio run -t upload`
+* run `pio run -t uploadfs`

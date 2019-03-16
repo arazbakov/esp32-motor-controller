@@ -10,25 +10,44 @@
 #include <ESPAsyncWebServer.h>
 #include <SPIFFS.h>
 #include <ESPmDNS.h>
+#include <WiFiUdp.h>
+#include <NTPClient.h>
 
 const char* ssid = "MSHomeNetwork24";
 const char* password = "5q14tbwht0";
 
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 0, 600000);
+
+unsigned long startupTime = 0;
+
 const char* startPage = "";
-char outputBuffer[512];
+char outputBuffer[1024];
 
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
-const int led = 13;
+const int led = 2;
 
 double xPosition = 0;
 double yPosition = 0;
 double zPosition = 0;
 double rotationAngle = 0;
 
+void putServerStatusOutput(char* buffer) {
+  sprintf(buffer, "{ \"uptime\": %lu, \"startedAt\": %lu }", millis(), startupTime);
+}
+
 void putAllInfoToOutput() {
-  sprintf(outputBuffer, "{\"type\": \"state\", \"x\": %.2f, \"y\": %.2f, \"z\": %.2f, \"a\": %.2f}", xPosition, yPosition, zPosition, rotationAngle);
+  char buffer[100];
+  putServerStatusOutput(buffer);
+  sprintf(outputBuffer, "{\"type\": \"state\", \"x\": %.2f, \"y\": %.2f, \"z\": %.2f, \"a\": %.2f, \"status\": %s }", 
+    xPosition, 
+    yPosition, 
+    zPosition, 
+    rotationAngle, 
+    buffer
+  );
 }
 
 void announceCurrentState() {
@@ -47,10 +66,10 @@ void changePosition(double x, double y, double z, double a) {
 }
 
 void handleNotFound(AsyncWebServerRequest *request) {
-  digitalWrite(led, 1);
+  digitalWrite(led, 0);
   String message = "File Not Found\n\n";
   request->send(404, "text/plain", message);
-  digitalWrite(led, 0);
+  digitalWrite(led, 1);
 }
 
 double parseDouble(char* data, int& offset, bool& valid) {
@@ -257,6 +276,7 @@ void processSet(char* data) {
 }
 
 void onMessage(AsyncWebSocket * server, AsyncWebSocketClient * client, char* data, size_t len) {
+  digitalWrite(led, 0);
   if (strncmp(data, "getInfo", 7) == 0) {
     //Serial.print("Processing getInfo for ");
     //Serial.println(client->id());
@@ -267,6 +287,7 @@ void onMessage(AsyncWebSocket * server, AsyncWebSocketClient * client, char* dat
   } else if (strncmp(data, "set", 3) == 0) {
     processSet(data + 3);
   }
+  digitalWrite(led, 1);
 }
 
 void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){
@@ -363,6 +384,13 @@ void setup(void) {
     Serial.println("MDNS responder started");
   }
 
+  timeClient.begin();
+  timeClient.update();
+
+  Serial.print("Startup time: ");
+  Serial.println(timeClient.getFormattedTime());
+  startupTime = timeClient.getEpochTime();
+
   server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
 
   ws.onEvent(onWsEvent);
@@ -372,8 +400,17 @@ void setup(void) {
 
   server.begin();
   Serial.println("HTTP server started");
+  digitalWrite(led, 1);
 }
+
+unsigned long updateTime = 0;
 
 void loop(void) {
   //server.handleClient();
+
+  // send update to all clients each 10 seconds
+  if (millis() - updateTime > 10000) {
+    updateTime = millis();
+    announceCurrentState();
+  }
 }

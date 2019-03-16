@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const elementZValue = document.querySelector("#zValue");
     const elementAValue = document.querySelector("#aValue");
     const elementControlsPanel = document.querySelector("#controlsPanel");
+    const elementServerStatusList = document.querySelector("#serverStatusList");
 
     let isConnected = false;
 
@@ -22,6 +23,59 @@ document.addEventListener('DOMContentLoaded', function () {
     let rotationAngle = 0;
 
     let currentSocket = null;
+
+    const setServerStateParam = (title, value) => {
+        let elementRow = elementServerStatusList.querySelector("[name=\"" + title + "\"]");
+        if (!elementRow) {
+            elementRow = document.createElement('div');
+            elementRow.setAttribute("name", title);
+            elementRow.className = 'row';
+
+            const elementTitle = document.createElement('div');
+            elementTitle.className = 'col param-title text-muted';
+            elementTitle.textContent = title;
+            
+            const elementValue = document.createElement('div');
+            elementValue.className = 'col-8 param-value';
+            elementValue.textContent = value;
+            
+            elementRow.appendChild(elementTitle);
+            elementRow.appendChild(elementValue);
+            
+            elementServerStatusList.appendChild(elementRow);
+        } else {
+            elementRow.querySelector(".param-value").textContent = value;
+        }
+    }
+
+    /**
+     * @param {{[uptime: number], [startedAt: number]}} state 
+     */
+    const updateServerState = (state) => {
+        if (state.startedAt) {
+            const startDate = new Date(state.startedAt * 1000);
+            setServerStateParam("Start time", `${startDate.getDate()}.${startDate.getMonth() + 1}.${startDate.getFullYear()} ${startDate.getHours()}:${startDate.getMinutes()}:${startDate.getSeconds()}`);
+            delete state.startedAt;
+        }
+        if (state.uptime) {
+            var uptimeValue = Math.floor(state.uptime / 1000);
+            var daysValue = Math.floor(uptimeValue / 60 / 60 / 24);
+            var hoursValue = Math.floor(uptimeValue / 60 / 60) - daysValue * 24;
+            var minutesValue = Math.floor(uptimeValue / 60) - daysValue * 24 - hoursValue * 60;
+            var secondsValue = uptimeValue - daysValue * 24 - hoursValue * 60 - minutesValue * 60;
+
+            setServerStateParam("Uptime", [
+                [daysValue, 'd'],
+                [hoursValue, 'h'],
+                [minutesValue, 'm'],
+                [secondsValue, 's']
+            ].filter( item => item[0] !== 0).map(item => item[0] + item[1]).join(' '));
+            delete state.uptime;
+        }
+
+        // output left unformatted values:
+        Object.entries(state).forEach(([key, value]) => setServerStateParam(key, value));
+    }
 
     const connect = () => {
         const socket = new WebSocket(`ws://${window.location.hostname}/ws`);
@@ -62,6 +116,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     elementAValue.value = rotationAngle.toFixed(1);
                     
                     break;
+            }
+
+            if (message.status) {
+                updateServerState(message.status);
             }
         });
 
